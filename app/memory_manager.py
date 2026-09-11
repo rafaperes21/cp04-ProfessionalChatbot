@@ -15,7 +15,7 @@ teto previsível de custo por chamada ao modelo, diferente do BufferMemory puro
 detalhes recentes que ainda importam).
 """
 
-from langchain.memory import (
+from langchain_classic.memory import (
     ConversationBufferMemory,
     ConversationSummaryMemory,
     ConversationTokenBufferMemory,

@@ -10,7 +10,7 @@
 import os
 
 from dotenv import load_dotenv
-from langchain.chains import ConversationChain
+from langchain_classic.chains import ConversationChain
 from langchain_core.output_parsers import PydanticOutputParser
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_ollama import ChatOllama

@@ -43,6 +43,27 @@ Para rodar a demonstração de context rot isoladamente:
 python -m app.context_rot
 ```
 
+## Testes automatizados
+
+```bash
+pytest tests/ -v
+```
+
+Os testes usam um modelo falso (`FakeChatModel`) no lugar do `ChatOllama` real,
+então rodam offline e não gastam tokens. Cobrem: validação do schema Pydantic
+(`tests/test_schemas.py`), as 3 estratégias de memória e a retenção/descarte
+de turnos no `TokenBufferMemory` (`tests/test_memory_manager.py`), e a fiação
+das 2 chains — inclusive que a `ConversationChain` lembra de um dado citado em
+turnos anteriores e que a Chain 2 retorna um `AnaliseSolicitacao` válido
+(`tests/test_chain.py`).
+
+**Nota:** `ConversationChain` e as classes de memória (`ConversationBufferMemory`,
+`ConversationSummaryMemory`, `ConversationTokenBufferMemory`) foram movidas
+para o pacote `langchain-classic` a partir do LangChain 1.0 e emitem um
+`DeprecationWarning` (serão substituídas por `create_agent` no LangChain 2.0).
+Isso é esperado e não é um erro — usamos essas classes porque são a
+arquitetura exigida no enunciado (Aula 03).
+
 ## Justificativa da memória
 
 Escolhemos **`ConversationTokenBufferMemory`** (janela de ~1200 tokens). Em
