@@ -33,6 +33,17 @@ conceitos financeiros básicos, sem acesso a um consultor particular.
 | Context rot | ✅ | `app/context_rot.py` — tabela 0/5/10/15/20 turnos |
 | Domínio documentado | ✅ | Este README + system prompt em `app/prompts.py` |
 
+## Interface e tema
+
+A interface Gradio usa um tema escuro customizado (`app/theme.py`), com paleta
+inspirada no design system da Binance (canvas quase preto + amarelo como
+único acento de marca — ver `.claude/skills/binance-design-frontend/` para o
+guia de estilo completo).
+
+**Nota de compatibilidade:** o Gradio 6 removeu o formato antigo de mensagens
+em tupla do `Chatbot` — mensagens agora precisam ser dicionários
+`{"role": ..., "content": ...}`. O `app/main.py` já usa esse formato.
+
 ## Como executar (local — sem Colab)
 
 ```bash
@@ -102,6 +113,7 @@ da dívida) citados em turnos distintos, mesmo com outros assuntos no meio.
 app/
 ├── __init__.py
 ├── main.py            # Interface Gradio + entry point
+├── theme.py             # Tema visual (paleta inspirada no design system da Binance)
 ├── chain.py            # As 2 chains (conversa + LCEL estruturado)
 ├── memory_manager.py   # 3 estratégias de memória + a escolhida
 ├── schemas.py           # Pydantic v2 — AnaliseConsulta
