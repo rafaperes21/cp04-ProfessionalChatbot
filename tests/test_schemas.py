@@ -1,38 +1,38 @@
-"""Testes do schema Pydantic v2 AnaliseSolicitacao."""
+"""Testes do schema Pydantic v2 AnaliseConsulta."""
 
 import pytest
 from pydantic import ValidationError
 
-from app.schemas import AnaliseSolicitacao
+from app.schemas import AnaliseConsulta
 
 
-def test_analise_solicitacao_valida():
-    obj = AnaliseSolicitacao(
-        categoria="duvida_produto",
+def test_analise_consulta_valida():
+    obj = AnaliseConsulta(
+        categoria="orcamento",
         urgencia="baixa",
         sentimento="neutro",
-        produto_mencionado="Fone XPTO",
-        resumo="Cliente quer saber se o fone tem cancelamento de ruido.",
-        acao_recomendada="Responder com as especificacoes do produto.",
+        topico_mencionado="cartao de credito",
+        resumo="Usuario quer ajuda para organizar o orcamento mensal.",
+        acao_recomendada="Sugerir listar gastos fixos e variaveis.",
     )
-    assert obj.categoria == "duvida_produto"
-    assert obj.produto_mencionado == "Fone XPTO"
+    assert obj.categoria == "orcamento"
+    assert obj.topico_mencionado == "cartao de credito"
 
 
-def test_produto_mencionado_e_opcional():
-    obj = AnaliseSolicitacao(
-        categoria="elogio",
+def test_topico_mencionado_e_opcional():
+    obj = AnaliseConsulta(
+        categoria="duvida_conceito",
         urgencia="baixa",
         sentimento="positivo",
-        resumo="Cliente elogiou o atendimento.",
-        acao_recomendada="Agradecer o feedback.",
+        resumo="Usuario perguntou o que e Tesouro Direto.",
+        acao_recomendada="Explicar o conceito de forma educativa.",
     )
-    assert obj.produto_mencionado is None
+    assert obj.topico_mencionado is None
 
 
 def test_categoria_invalida_gera_erro():
     with pytest.raises(ValidationError):
-        AnaliseSolicitacao(
+        AnaliseConsulta(
             categoria="categoria_que_nao_existe",
             urgencia="baixa",
             sentimento="neutro",
@@ -43,4 +43,4 @@ def test_categoria_invalida_gera_erro():
 
 def test_campo_obrigatorio_faltando_gera_erro():
     with pytest.raises(ValidationError):
-        AnaliseSolicitacao(categoria="outro", urgencia="baixa", sentimento="neutro")
+        AnaliseConsulta(categoria="outro", urgencia="baixa", sentimento="neutro")

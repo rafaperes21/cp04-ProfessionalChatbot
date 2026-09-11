@@ -1,22 +1,26 @@
-# CKP01 — Chatbot Profissional · Atendimento ao Cliente (E-commerce)
+# CKP01 — Chatbot Profissional · Educação Financeira Pessoal
 
 **Prompt Engineering & AI · FIAP · 2º Semestre 2026**
-**Integrantes:** [Nome Completo (RM00000)] · [Nome Completo (RM00000)] · [Nome Completo (RM00000)]
+**Integrantes:** Rafael Marinucci Peres (RM569729) · David dos Reis Cardoso (RM568938)
 **Peso: 25% · Apresentação: Aula 04 · Entrega: 23:55 do dia da Aula 05 (.zip via Teams — só o líder)**
 
 ## Domínio
 
-Assistente virtual de atendimento ao cliente da loja fictícia de eletrônicos
-"TechNova". O chatbot (persona "Ana") ajuda clientes com dúvidas sobre
-produtos, status de pedidos, trocas/devoluções e reclamações.
+Assistente virtual de educação financeira da plataforma fictícia "FinComigo".
+O chatbot (persona "Fê") ajuda usuários a organizar orçamento, entender
+dívidas, planejar metas de economia e compreender conceitos de investimento —
+sempre de forma educativa, nunca como recomendação personalizada de compra ou
+venda de ativos (isso fica a cargo de um consultor certificado CFP/CVM).
 
-Escolhido porque conversas de suporte são naturalmente multi-turno (o cliente
-menciona um pedido/produto e retoma o assunto depois) e geram saídas
-estruturadas claras (categoria, urgência, sentimento), além de servir de base
-para RAG (catálogo/políticas) no CKP02 e para tools de um agente (consultar
-pedido, calcular frete) no CKP03.
+Escolhido porque conversas de educação financeira são naturalmente
+multi-turno (o usuário menciona uma meta, dívida ou valor e retoma o assunto
+depois) e geram saídas estruturadas claras (categoria, urgência, sentimento),
+além de servir de base para RAG (guias financeiros, glossário de conceitos)
+no CKP02 e para tools de um agente (calculadora de juros compostos, simulador
+de financiamento, categorizador de gastos) no CKP03.
 
-Usuários-alvo: clientes da loja online que buscam suporte pré ou pós-venda.
+Usuários-alvo: pessoas que querem organizar as próprias finanças e entender
+conceitos financeiros básicos, sem acesso a um consultor particular.
 
 ## Requisitos atendidos
 
@@ -25,7 +29,7 @@ Usuários-alvo: clientes da loja online que buscam suporte pré ou pós-venda.
 | Pipeline LCEL | ✅ | `app/chain.py` — `prompt \| llm \| PydanticOutputParser()` |
 | ChatOllama | ✅ | `gemma4:cloud` via Ollama Cloud (`.env`) |
 | Memória gerenciada | ✅ | `ConversationChain` + `ConversationTokenBufferMemory`, justificada em `app/memory_manager.py` |
-| Pydantic v2 (≥4 campos) | ✅ | `AnaliseSolicitacao` com 6 campos em `app/schemas.py` |
+| Pydantic v2 (≥4 campos) | ✅ | `AnaliseConsulta` com 6 campos em `app/schemas.py` |
 | Context rot | ✅ | `app/context_rot.py` — tabela 0/5/10/15/20 turnos |
 | Domínio documentado | ✅ | Este README + system prompt em `app/prompts.py` |
 
@@ -54,7 +58,7 @@ então rodam offline e não gastam tokens. Cobrem: validação do schema Pydanti
 (`tests/test_schemas.py`), as 3 estratégias de memória e a retenção/descarte
 de turnos no `TokenBufferMemory` (`tests/test_memory_manager.py`), e a fiação
 das 2 chains — inclusive que a `ConversationChain` lembra de um dado citado em
-turnos anteriores e que a Chain 2 retorna um `AnaliseSolicitacao` válido
+turnos anteriores e que a Chain 2 retorna um `AnaliseConsulta` válido
 (`tests/test_chain.py`).
 
 **Nota:** `ConversationChain` e as classes de memória (`ConversationBufferMemory`,
@@ -67,14 +71,30 @@ arquitetura exigida no enunciado (Aula 03).
 ## Justificativa da memória
 
 Escolhemos **`ConversationTokenBufferMemory`** (janela de ~1200 tokens). Em
-atendimento ao cliente, detalhes exatos citados pelo usuário (número de
-pedido, nome de produto) não podem ser parafraseados por um resumo — um
-`SummaryMemory` correria o risco de distorcer esses dados. O `TokenBuffer`
+educação financeira, detalhes exatos citados pelo usuário (valor da meta,
+valor da dívida, prazo) não podem ser parafraseados por um resumo — um
+`SummaryMemory` correria o risco de distorcer esses números. O `TokenBuffer`
 mantém os turnos recentes de forma literal e descarta os mais antigos ao
 ultrapassar o limite, o que garante fidelidade aos dados recentes e um teto
 previsível de custo por chamada ao modelo (diferente do `BufferMemory` puro,
 que cresce sem limite). Ver `app/memory_manager.py` para a implementação das
 três estratégias.
+
+### Evidência real (6 turnos, `gemma4:cloud`)
+
+```
+Turno 1 — Usuário: Oi, minha meta é economizar R$500 por mês para viajar.
+Turno 2 — Usuário: O que é melhor, Tesouro Direto ou poupança?
+Turno 3 — Usuário: Estou também com uma dívida de R$2000 no cartão de crédito.
+Turno 4 — Usuário: Qual das duas coisas eu deveria priorizar primeiro?
+Turno 5 — Usuário: Qual era a minha meta de economia mensal mesmo, que eu falei no começo?
+          Fê: "Sua meta é economizar R$ 500 por mês para viajar! [...]"   ✅ lembrou
+Turno 6 — Usuário: E o valor da minha dívida no cartão, você lembra?
+          Fê: "Lembro sim! Você mencionou que tem uma dívida de R$ 2.000 [...]"  ✅ lembrou
+```
+
+A memória reteve corretamente dois dados diferentes (meta de economia e valor
+da dívida) citados em turnos distintos, mesmo com outros assuntos no meio.
 
 ## Estrutura do projeto
 
@@ -84,7 +104,7 @@ app/
 ├── main.py            # Interface Gradio + entry point
 ├── chain.py            # As 2 chains (conversa + LCEL estruturado)
 ├── memory_manager.py   # 3 estratégias de memória + a escolhida
-├── schemas.py           # Pydantic v2 — AnaliseSolicitacao
+├── schemas.py           # Pydantic v2 — AnaliseConsulta
 ├── context_rot.py       # Demonstração de degradação com contexto crescente
 └── prompts.py            # System prompts com XML tagging
 ```

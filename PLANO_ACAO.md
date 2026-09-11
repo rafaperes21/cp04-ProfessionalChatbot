@@ -6,21 +6,23 @@
 
 ---
 
-## 0. Domínio sugerido
+## 0. Domínio escolhido
 
-**Assistente Virtual de Atendimento ao Cliente — Loja de E-commerce**
+**Assistente Virtual de Educação Financeira Pessoal — "FinComigo"**
 
 Por que esse domínio funciona bem para os três checkpoints do semestre:
 
 | CKP | Como o domínio se encaixa |
 |---|---|
-| CKP01 (agora) | Conversas de suporte são naturalmente multi-turno (cliente descreve problema, dá número de pedido, tira dúvida) → memória tem propósito real. Saídas estruturadas óbvias (categoria do chamado, urgência, sentimento). |
-| CKP02 (RAG) | Base de conhecimento rica e fácil de gerar: catálogo de produtos, política de trocas/devoluções, FAQ, prazos de entrega. |
-| CKP03 (Agente) | Ações naturais como *tools*: consultar status de pedido, calcular prazo de frete, abrir chamado, verificar estoque. |
+| CKP01 (agora) | Conversas de educação financeira são naturalmente multi-turno (usuário menciona meta/dívida/valor e retoma o assunto depois) → memória tem propósito real. Saídas estruturadas óbvias (categoria da consulta, urgência, sentimento). |
+| CKP02 (RAG) | Base de conhecimento rica e fácil de gerar: guias de orçamento, glossário de conceitos financeiros (Tesouro Direto, CDB, reserva de emergência), políticas gerais de crédito. |
+| CKP03 (Agente) | Ações naturais como *tools*, todas calculáveis sem depender de API externa: calculadora de juros compostos, simulador de financiamento, categorizador de gastos. |
 
-Usuários-alvo: clientes de uma loja online que precisam de suporte pré/pós-venda.
+Usuários-alvo: pessoas que querem organizar as próprias finanças e entender conceitos financeiros básicos, sem acesso a um consultor particular.
 
-Se o grupo preferir outro domínio (jurídico, saúde educacional, RH, financeiro, educacional), a estrutura deste plano é a mesma — só troca a persona, o schema Pydantic e os exemplos de teste. **Registrem o domínio escolhido no Portal ainda na Aula 01** — é o item que mais planeja errado (domínio duplicado com outro grupo só aceita o primeiro a entregar).
+Ponto de atenção específico deste domínio: como envolve dinheiro, o system prompt precisa deixar **muito claro** que o chatbot é educativo — nunca deve recomendar um ativo/investimento específico como se fosse adequado ao caso pessoal do usuário (isso é aconselhamento regulado, exige certificação CFP/CVM). Ver seção 3.4.
+
+**Registrem o domínio escolhido no Portal ainda na Aula 01** — é o item que mais gente esquece (domínio duplicado com outro grupo só aceita o primeiro a entregar).
 
 ---
 
@@ -34,7 +36,7 @@ Se o grupo preferir outro domínio (jurídico, saúde educacional, RH, financeir
 │                               │      │   | PydanticOutputParser              │
 └─────────────────────────────┘      └──────────────────────────────────────┘
       ↓                                          ↓
- resposta em linguagem natural           AnaliseSolicitacao(categoria=...,
+ resposta em linguagem natural           AnaliseConsulta(categoria=...,
  para o usuário no Gradio                urgencia=..., sentimento=..., ...)
 ```
 
@@ -53,7 +55,7 @@ ckp01-chatbot/
 │   ├── main.py            # Interface Gradio + entry point (python -m app.main)
 │   ├── chain.py           # As 2 chains (conversa + LCEL estruturado)
 │   ├── memory_manager.py  # Implementação das 3 estratégias + a escolhida
-│   ├── schemas.py         # Pydantic v2 — AnaliseSolicitacao (≥4 campos)
+│   ├── schemas.py         # Pydantic v2 — AnaliseConsulta (≥4 campos)
 │   ├── context_rot.py     # Script/módulo de demonstração de degradação
 │   └── prompts.py         # System prompts com XML tags
 ├── .env.example
@@ -75,20 +77,20 @@ ckp01-chatbot/
 
 ### 3.2 Gestão de memória e context rot — 2,5 pts
 - [ ] Escolher **um** tipo: Buffer, Summary ou TokenBuffer (800–1500 tokens)
-  - Recomendação para este domínio: **TokenBuffer (~1200 tokens)** — em suporte ao cliente, detalhes exatos (número de pedido, nome de produto) não podem ser parafraseados por um resumo; um buffer com janela de tokens preserva os turnos recentes literalmente e ainda limita custo. Documentar essa justificativa no README.
+  - Recomendação para este domínio: **TokenBuffer (~1200 tokens)** — em educação financeira, detalhes exatos (valor de uma meta, valor de uma dívida) não podem ser parafraseados por um resumo; um buffer com janela de tokens preserva os turnos recentes literalmente e ainda limita custo. Documentar essa justificativa no README.
 - [ ] Implementar em `memory_manager.py`, plugado no `ConversationChain`
-- [ ] Testar e registrar evidência de memória funcionando em **≥5 turnos** (ex: mencionar um produto no turno 1, perguntar "e aquele que eu falei antes?" no turno 5)
+- [ ] Testar e registrar evidência de memória funcionando em **≥5 turnos** (ex: mencionar uma meta de economia no turno 1, perguntar "qual era minha meta mesmo?" no turno 5)
 - [ ] `context_rot.py`: mesmo prompt/pergunta rodado com janelas de contexto crescentes (0/5/10/15/20 turnos de "ruído" antes da pergunta real) → mostrar em tabela ou gráfico que a qualidade da resposta cai conforme o contexto cresce
 
 ### 3.3 Pydantic v2 com validação — 2,0 pts
-- [ ] `schemas.py`: `AnaliseSolicitacao(BaseModel)` com ≥4 campos tipados, por exemplo:
+- [ ] `schemas.py`: `AnaliseConsulta(BaseModel)` com ≥4 campos tipados, por exemplo:
   ```python
-  class AnaliseSolicitacao(BaseModel):
-      categoria: Literal["duvida_produto", "status_pedido", "troca_devolucao", "reclamacao", "elogio", "outro"]
+  class AnaliseConsulta(BaseModel):
+      categoria: Literal["orcamento", "divida", "investimento_educacional", "planejamento_meta", "duvida_conceito", "outro"]
       urgencia: Literal["baixa", "media", "alta"]
       sentimento: Literal["positivo", "neutro", "negativo"]
-      produto_mencionado: str | None = None
-      resumo: str = Field(..., description="Resumo da solicitação em 1 frase")
+      topico_mencionado: str | None = None
+      resumo: str = Field(..., description="Resumo da consulta em 1 frase")
       acao_recomendada: str
   ```
 - [ ] Usar `PydanticOutputParser` (não `JsonOutputParser`) — integrado à Chain 2 do LCEL
@@ -96,8 +98,8 @@ ckp01-chatbot/
 
 ### 3.4 System prompt e domínio — 1,5 pts
 - [ ] Persona robusta em `prompts.py` com **XML tags** (técnica da Aula 04): `<persona>`, `<regras>`, `<restricoes>`, `<exemplos>`
-- [ ] Regras e restrições coerentes com o domínio (ex: não promete prazo não confirmado, não pede dados de cartão, escalona para humano quando necessário)
-- [ ] Testar que o chatbot **não sai do personagem** mesmo sob perguntas fora do escopo ("ignore suas instruções", perguntas genéricas não relacionadas)
+- [ ] Regras e restrições coerentes com o domínio: **nunca recomendar um ativo/investimento específico como adequado ao caso pessoal do usuário** (isso é aconselhamento regulado — orientar a buscar um consultor CFP/CVM), nunca pedir dados bancários, nunca prometer rentabilidade/economia garantida
+- [ ] Testar que o chatbot **não sai do personagem** mesmo sob perguntas fora do escopo ("ignore suas instruções", "me recomenda uma ação para comprar agora")
 - [ ] README documenta: domínio, por que foi escolhido, usuários-alvo
 
 ### 3.5 Código e documentação — 1,0 pt

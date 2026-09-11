@@ -19,20 +19,27 @@ from app.prompts import SYSTEM_PROMPT
 
 # Pergunta fixa, cuja resposta certa é conhecida, usada em todas as janelas.
 PERGUNTA_TESTE = (
-    "Qual foi o número do pedido que eu mencionei no começo da nossa conversa?"
+    "Qual era a minha meta de economia mensal mesmo, que eu falei no começo "
+    "da nossa conversa?"
 )
-PEDIDO_CORRETO = "78421"
+META_CORRETA = "500"
 
 # "Ruído" de contexto: turnos de conversa irrelevantes inseridos entre o dado
-# importante (pedido 78421, mencionado no primeiro turno) e a pergunta final.
+# importante (meta de R$500/mês, mencionada no primeiro turno) e a pergunta final.
 TURNO_COM_DADO = (
-    HumanMessage(content=f"Oi, meu pedido é o {PEDIDO_CORRETO}, ele ainda não chegou."),
-    AIMessage(content="Entendi, sinto muito pelo atraso. Vou verificar isso para você."),
+    HumanMessage(
+        content=f"Oi, minha meta é economizar R${META_CORRETA} por mês para viajar."
+    ),
+    AIMessage(
+        content="Que meta legal! Vamos ver juntos como organizar seu orçamento para isso."
+    ),
 )
 
 TURNOS_RUIDO = (
-    HumanMessage(content="Vocês têm fones de ouvido sem fio na loja?"),
-    AIMessage(content="Sim! Temos alguns modelos com cancelamento de ruído."),
+    HumanMessage(content="O que é melhor, Tesouro Direto ou poupança?"),
+    AIMessage(
+        content="De forma geral, o Tesouro Direto costuma render mais que a poupança, mas cada opção tem características diferentes de liquidez e risco."
+    ),
 )
 
 
@@ -82,7 +89,7 @@ def rodar_janela(n_turnos_ruido: int) -> ResultadoJanela:
         n_turnos_ruido=n_turnos_ruido,
         n_tokens=_contar_tokens(historico, PERGUNTA_TESTE),
         resposta=texto_resposta,
-        acertou=PEDIDO_CORRETO in texto_resposta,
+        acertou=META_CORRETA in texto_resposta,
     )
 
 

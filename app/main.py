@@ -24,18 +24,18 @@ def responder(mensagem: str, historico_ui: list):
     return historico_ui, analise_texto, ""
 
 
-with gr.Blocks(title="TechNova — Assistente de Atendimento") as demo:
-    gr.Markdown("## TechNova — Assistente de Atendimento (CKP01)")
+with gr.Blocks(title="FinComigo — Educação Financeira") as demo:
+    gr.Markdown("## FinComigo — Assistente de Educação Financeira (CKP01)")
 
     with gr.Row():
         with gr.Column(scale=2):
-            chatbot = gr.Chatbot(label="Conversa com a Ana")
+            chatbot = gr.Chatbot(label="Conversa com a Fê")
             entrada = gr.Textbox(
                 label="Sua mensagem", placeholder="Digite e pressione Enter..."
             )
         with gr.Column(scale=1):
             analise_saida = gr.Textbox(
-                label="Análise estruturada (AnaliseSolicitacao)",
+                label="Análise estruturada (AnaliseConsulta)",
                 lines=12,
                 interactive=False,
             )
