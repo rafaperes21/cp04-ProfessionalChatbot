@@ -35,14 +35,20 @@ conceitos financeiros básicos, sem acesso a um consultor particular.
 
 ## Interface e tema
 
-A interface Gradio usa um tema escuro customizado (`app/theme.py`), com paleta
-inspirada no design system da Binance (canvas quase preto + amarelo como
-único acento de marca — ver `.claude/skills/binance-design-frontend/` para o
-guia de estilo completo).
+A interface usa `gr.ChatInterface` (Gradio) com um tema escuro customizado
+(`app/theme.py`), paleta inspirada no design system da Binance (canvas quase
+preto + amarelo como único acento de marca — ver
+`.claude/skills/binance-frontend-design/` para o guia de estilo completo).
+O ícone em `app/assets/icon.png` (fundo removido, PNG transparente) é usado
+como favicon da aba do navegador e como avatar da Fê nas mensagens do chat.
+`gr.ChatInterface` também entrega, de graça, exemplos de pergunta clicáveis,
+botões de copiar/regenerar resposta e rolagem automática — um visual mais
+próximo de um chat de produto (Claude, ChatGPT) do que uma tela genérica.
 
 **Nota de compatibilidade:** o Gradio 6 removeu o formato antigo de mensagens
 em tupla do `Chatbot` — mensagens agora precisam ser dicionários
-`{"role": ..., "content": ...}`. O `app/main.py` já usa esse formato.
+`{"role": ..., "content": ...}`. Também moveu `theme`/`css` do construtor de
+`Blocks()` para `demo.launch()`. `app/main.py` já reflete as duas mudanças.
 
 ## Como executar (local — sem Colab)
 
@@ -112,8 +118,10 @@ da dívida) citados em turnos distintos, mesmo com outros assuntos no meio.
 ```
 app/
 ├── __init__.py
-├── main.py            # Interface Gradio + entry point
+├── main.py            # Interface Gradio (ChatInterface) + entry point
 ├── theme.py             # Tema visual (paleta inspirada no design system da Binance)
+├── assets/
+│   └── icon.png          # Favicon + avatar da Fê (fundo removido)
 ├── chain.py            # As 2 chains (conversa + LCEL estruturado)
 ├── memory_manager.py   # 3 estratégias de memória + a escolhida
 ├── schemas.py           # Pydantic v2 — AnaliseConsulta
