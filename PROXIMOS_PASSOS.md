@@ -12,8 +12,11 @@ diferenciais. Complementa o [PLANO_ACAO.md](PLANO_ACAO.md) (visão geral) e as
 - [x] 14 testes automatizados passando (`pytest tests/ -v`), offline, sem gastar tokens
 - [x] Milestones + issues criadas no GitHub
 - [x] README preenchido com nomes/RMs dos 6 integrantes e divisão de responsabilidades
-- [x] Diferencial "gráfico de qualidade x tokens": `gerar_grafico()` implementado em `app/context_rot.py`
-- [x] Diferencial "meta prompting": `app/meta_prompting.py` criado (crítica automática do system prompt)
+- [x] Ollama Cloud autenticado localmente (`ollama signin`) e `.env` configurado
+- [x] Experimento de context rot rodado de verdade com `gemma4:cloud` (0 a 500 turnos de ruído, até 25,6 mil tokens) — sem degradação de acerto, com degradação real de latência; gráfico em `context_rot_grafico.png`
+- [x] Teste real da memória de produção (`TokenBufferMemory`) sob ruído turno a turno — buffer estabiliza em ~1.400 tokens, comportamento documentado no README
+- [x] Meta prompting rodado de verdade: crítica real do `gemma4:cloud` aplicada em `app/prompts.py` (regras 4 e 7 novas, restrições reforçadas contra jailbreak/roleplay)
+- [x] Teste de resistência do system prompt rodado de verdade (5 tentativas de jailbreak, todas recusadas) — documentado no README
 
 ## O que falta — em ordem de prioridade
 
