@@ -4,10 +4,10 @@ Implementa as 3 estratégias vistas em aula (Buffer, Summary, TokenBuffer) e
 expõe qual delas é usada pelo chatbot em produção via `build_memory`.
 
 Justificativa da escolha (TokenBuffer, ~1200 tokens):
-No domínio de atendimento ao cliente, detalhes exatos citados pelo usuário
-(número de pedido, nome de produto, prazo combinado) não podem ser parafraseados
-por um resumo automático — um erro de paráfrase pode levar a uma ação errada
-(ex: trocar o produto errado). O ConversationTokenBufferMemory mantém os turnos
+No domínio de educação financeira pessoal, detalhes exatos citados pelo usuário
+(valor de uma meta, valor de uma dívida, prazo combinado) não podem ser
+parafraseados por um resumo automático — um erro de paráfrase pode distorcer
+esses números. O ConversationTokenBufferMemory mantém os turnos
 recentes literalmente, e descarta os mais antigos ao ultrapassar o limite de
 tokens, o que garante: (1) fidelidade aos dados citados recentemente, e (2) um
 teto previsível de custo por chamada ao modelo, diferente do BufferMemory puro

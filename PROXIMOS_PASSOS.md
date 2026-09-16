@@ -11,6 +11,9 @@ diferenciais. Complementa o [PLANO_ACAO.md](PLANO_ACAO.md) (visão geral) e as
 - [x] Bug de import corrigido (`langchain.chains`/`langchain.memory` → `langchain-classic`)
 - [x] 14 testes automatizados passando (`pytest tests/ -v`), offline, sem gastar tokens
 - [x] Milestones + issues criadas no GitHub
+- [x] README preenchido com nomes/RMs dos 6 integrantes e divisão de responsabilidades
+- [x] Diferencial "gráfico de qualidade x tokens": `gerar_grafico()` implementado em `app/context_rot.py`
+- [x] Diferencial "meta prompting": `app/meta_prompting.py` criado (crítica automática do system prompt)
 
 ## O que falta — em ordem de prioridade
 
@@ -83,12 +86,10 @@ seção "Justificativa da memória", como evidência.
 3. Se decidirem trocar de domínio depois, atualizar `app/prompts.py`,
    `app/schemas.py`, `app/context_rot.py` e o README.
 
-### 6. Preencher README com integrantes — [#4](https://github.com/rafaperes21/cp04-ProfessionalChatbot/issues/4)
+### 6. Preencher README com integrantes — [#4](https://github.com/rafaperes21/cp04-ProfessionalChatbot/issues/4) ✅ feito
 
-Editar `README.md`, linha dos integrantes, trocando os placeholders:
-```
-**Integrantes:** Nome Completo (RM00000) · Nome Completo (RM00000) · ...
-```
+Os 6 integrantes e RMs já estão no `README.md`, junto com uma seção de
+divisão de responsabilidades por frente de trabalho.
 
 ---
 
@@ -146,18 +147,24 @@ README, na seção de context rot. Se o modelo acertar em todas as janelas
 `app/context_rot.py` ou usar uma pergunta mais sensível a ruído até
 aparecer degradação real.
 
-### 12. [Diferencial +0,5] Gráfico de qualidade x tokens — [#10](https://github.com/rafaperes21/cp04-ProfessionalChatbot/issues/10)
+### 12. [Diferencial +0,5] Gráfico de qualidade x tokens — [#10](https://github.com/rafaperes21/cp04-ProfessionalChatbot/issues/10) — código pronto, falta rodar
 
-Estender `app/context_rot.py` (função nova, ex: `gerar_grafico`) usando
-`matplotlib` para plotar tokens (eixo x) vs. taxa de acerto (eixo y),
-salvando como PNG (ex: `context_rot_grafico.png`) e referenciando no README.
+`gerar_grafico()` já está implementado em `app/context_rot.py`. Falta só
+rodar com uma `OLLAMA_API_KEY` válida:
+```bash
+python -m app.context_rot
+```
+Isso gera `context_rot_grafico.png` na raiz — conferir se ficou salvo e
+referenciar no README (seção Diferenciais) se ainda não estiver linkado.
 
-### 13. [Diferencial +0,5] Meta prompting — [#11](https://github.com/rafaperes21/cp04-ProfessionalChatbot/issues/11)
+### 13. [Diferencial +0,5] Meta prompting — [#11](https://github.com/rafaperes21/cp04-ProfessionalChatbot/issues/11) — código pronto, falta rodar
 
-1. Pedir para o próprio `gemma4:cloud` criticar o `SYSTEM_PROMPT` atual
-   (ex: "Analise este system prompt e sugira melhorias: ...").
+`app/meta_prompting.py` já está implementado. Falta:
+1. Rodar `python -m app.meta_prompting` (requer `OLLAMA_API_KEY` válida) para
+   obter a crítica do próprio `gemma4:cloud` sobre o `SYSTEM_PROMPT`.
 2. Aplicar as melhorias que fizerem sentido em `app/prompts.py`.
-3. Documentar no README a versão antes/depois e uma frase sobre a melhoria.
+3. Colar o antes/depois na seção "Diferenciais" do README (já tem um
+   placeholder pronto para isso).
 
 ---
 

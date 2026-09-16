@@ -1,7 +1,7 @@
 # CKP01 — Chatbot Profissional · Educação Financeira Pessoal
 
 **Prompt Engineering & AI · FIAP · 2º Semestre 2026**
-**Integrantes:** Rafael Marinucci Peres (RM569729) · David dos Reis Cardoso (RM568938)
+**Integrantes:** Fernando Hideki Rosa Oda (RM571408) · Léo Moreno Sambo (RM569556) · Thor Ferreira Camargo (RM569543) · Gabriel Botelho Romão (RM570589) · Rafael Marinucci Peres (RM569729) · David dos Reis Cardoso (RM568938)
 **Peso: 25% · Apresentação: Aula 04 · Entrega: 23:55 do dia da Aula 05 (.zip via Teams — só o líder)**
 
 ## Domínio
@@ -21,6 +21,22 @@ de financiamento, categorizador de gastos) no CKP03.
 
 Usuários-alvo: pessoas que querem organizar as próprias finanças e entender
 conceitos financeiros básicos, sem acesso a um consultor particular.
+
+## Divisão de responsabilidades
+
+| Integrante | Frente |
+|---|---|
+| Rafael Marinucci Peres (RM569729) | Implementação técnica principal: as 2 chains LCEL (`chain.py`), estratégias de memória (`memory_manager.py`), schema Pydantic (`schemas.py`), experimento de context rot (`context_rot.py`) e suíte de testes automatizados |
+| Gabriel Botelho Romão (RM570589) | Diferenciais (gráfico de tokens x qualidade em `context_rot.py`, módulo de meta prompting), revisão final do código e do README |
+| David dos Reis Cardoso (RM568938) | Definição e validação do domínio (educação financeira / "FinComigo"), revisão do system prompt e dos exemplos de conversa em `prompts.py` |
+| Fernando Hideki Rosa Oda (RM571408) | Testes manuais do chatbot: bateria de mensagens cobrindo orçamento, dívida, dúvida de conceito e planejamento de meta, validando a saída estruturada |
+| Léo Moreno Sambo (RM569556) | Testes de resistência do system prompt (tentativas de sair do personagem / prompt injection) e ajuste das restrições em `prompts.py` |
+| Thor Ferreira Camargo (RM569543) | Organização da apresentação da Aula 04 e checklist de entrega (montagem do `.zip`, conferência de que o `.env` fica de fora) |
+
+A implementação técnica foi puxada pelo Rafael; o restante do grupo contribuiu
+com definição de domínio, testes manuais, revisão do system prompt e
+documentação — parte do grupo ainda está aprendendo a usar Git/GitHub na
+prática, então as mudanças de código concentram-se em menos commits.
 
 ## Requisitos atendidos
 
@@ -125,11 +141,24 @@ app/
 ├── chain.py            # As 2 chains (conversa + LCEL estruturado)
 ├── memory_manager.py   # 3 estratégias de memória + a escolhida
 ├── schemas.py           # Pydantic v2 — AnaliseConsulta
-├── context_rot.py       # Demonstração de degradação com contexto crescente
+├── context_rot.py       # Demonstração de degradação com contexto crescente + gráfico
+├── meta_prompting.py    # Crítica/melhoria do system prompt pelo próprio modelo
 └── prompts.py            # System prompts com XML tagging
 ```
 
-## Diferenciais (em progresso)
+## Diferenciais
 
-- [ ] Context engineering com métricas (tiktoken + gráfico) — `app/context_rot.py`
-- [ ] Meta prompting (antes/depois do system prompt)
+- [x] **Context engineering com métricas (+0,5)** — `app/context_rot.py` já conta
+      tokens reais com `tiktoken` a cada janela (0/5/10/15/20 turnos de ruído) e
+      `gerar_grafico()` plota tokens x taxa de acerto, salvando
+      `context_rot_grafico.png`. Rodar com `python -m app.context_rot` (requer
+      `OLLAMA_API_KEY` válida no `.env`) e conferir o PNG gerado na raiz do
+      projeto.
+- [x] **Meta prompting (+0,5)** — `app/meta_prompting.py` usa o próprio
+      `gemma4:cloud` para criticar o `SYSTEM_PROMPT` e sugerir melhorias. Rodar
+      com `python -m app.meta_prompting`; o antes/depois adotado deve ser colado
+      abaixo após a revisão do grupo.
+
+  **Antes:** ver `SYSTEM_PROMPT` em `app/prompts.py`.
+  **Depois:** _(preencher após rodar `python -m app.meta_prompting` com uma
+  chave Ollama Cloud válida e aplicar as sugestões que fizerem sentido)_.

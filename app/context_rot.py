@@ -105,6 +105,33 @@ def imprimir_tabela(resultados: list[ResultadoJanela]) -> None:
         print(f"{r.n_turnos_ruido:>12} | {tokens!s:>8} | {'sim' if r.acertou else 'não':>9} | {r.resposta[:60]}")
 
 
+def gerar_grafico(
+    resultados: list[ResultadoJanela], caminho: str = "context_rot_grafico.png"
+) -> str:
+    """Plota tokens (eixo x) vs. taxa de acerto (eixo y) e salva como PNG.
+
+    Diferencial de +0,5 (context engineering com métricas). Requer `matplotlib`.
+    """
+    import matplotlib.pyplot as plt
+
+    tokens = [r.n_tokens for r in resultados if r.n_tokens is not None]
+    acertos = [100 if r.acertou else 0 for r in resultados if r.n_tokens is not None]
+
+    fig, ax = plt.subplots(figsize=(7, 4))
+    ax.plot(tokens, acertos, marker="o", color="#1f77b4")
+    ax.set_xlabel("Tokens de contexto")
+    ax.set_ylabel("Acertou a pergunta? (100 = sim, 0 = não)")
+    ax.set_title("Context rot — qualidade da resposta x tamanho do contexto")
+    ax.set_ylim(-10, 110)
+    ax.grid(True, alpha=0.3)
+    fig.tight_layout()
+    fig.savefig(caminho, dpi=150)
+    plt.close(fig)
+    return caminho
+
+
 if __name__ == "__main__":
     resultados = rodar_experimento()
     imprimir_tabela(resultados)
+    caminho_grafico = gerar_grafico(resultados)
+    print(f"\nGráfico salvo em: {caminho_grafico}")
