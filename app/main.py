@@ -3,6 +3,7 @@
 Rodar com: `python -m app.main` (abre em http://localhost:7860)
 """
 
+import httpx
 import gradio as gr
 
 from app.chain import build_analise_chain, build_conversation_chain
@@ -15,7 +16,14 @@ analise_chain = build_analise_chain()
 
 
 def responder(mensagem: str, history: list):
-    resposta = conversation_chain.predict(input=mensagem)
+    try:
+        resposta = conversation_chain.predict(input=mensagem)
+    except httpx.ConnectError as exc:
+        raise gr.Error(
+            "Não foi possível conectar ao Ollama local. Confirme que o "
+            "`ollama serve` está rodando (veja a seção 'Como executar' do "
+            "README) e tente enviar a mensagem de novo."
+        ) from exc
 
     try:
         analise = analise_chain.invoke({"input": mensagem})

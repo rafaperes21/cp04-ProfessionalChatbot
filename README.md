@@ -68,11 +68,25 @@ em tupla do `Chatbot` — mensagens agora precisam ser dicionários
 
 ## Como executar (local — sem Colab)
 
+**Pré-requisito: o Ollama precisa estar instalado e com o servidor local rodando**
+(`ollama serve`) — é ele quem faz a ponte com o Ollama Cloud usando sua
+`OLLAMA_API_KEY`. Sem isso, qualquer mensagem enviada no chat falha com um
+erro genérico ("Erro") na interface, mesmo com a chave configurada
+corretamente no `.env`.
+
 ```bash
 cp .env.example .env   # edite com sua OLLAMA_API_KEY — este arquivo NÃO vai no .zip
 pip install -r requirements.txt
-python -m app.main     # Gradio: http://localhost:7860
+
+ollama serve            # deixe rodando em um terminal separado (ou já em background)
+ollama run gemma4:cloud "oi"   # teste rápido: confirma que a Ollama Cloud responde
+
+python -m app.main      # Gradio: http://localhost:7860
 ```
+
+**Troubleshooting:** se toda mensagem no chat retornar "Erro" sem detalhe,
+confira primeiro se `ollama serve` está rodando (`curl http://localhost:11434/api/version`
+deve responder) — esse é o problema mais comum, não um bug no código.
 
 Para rodar a demonstração de context rot isoladamente:
 
