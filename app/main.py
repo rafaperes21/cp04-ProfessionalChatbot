@@ -37,7 +37,7 @@ def responder(mensagem: str, history: list):
 with gr.Blocks(title="FinComigo — Educação Financeira") as demo:
     gr.Markdown(
         '<h2 id="fincomigo-header">FinComigo</h2>'
-        '<span id="fincomigo-badge">Educação Financeira · CKP01</span>'
+        '<span id="fincomigo-badge">Educação Financeira · CKP01 · CKP02</span>'
     )
 
     analise_saida = gr.Textbox(
