@@ -126,17 +126,34 @@ rerank + generate), com as fontes citadas ao final de cada resposta.
 
 ## Como executar
 
+**Pré-requisitos** (testado com Python 3.12):
+
+1. [Ollama](https://ollama.com) instalado, com o servidor local rodando
+   (`ollama serve`, ou já em segundo plano) — é ele quem conversa com o
+   Ollama Cloud e roda o modelo de embedding.
+2. Autenticação com o Ollama Cloud, para o `gemma4:cloud`: `ollama signin`
+   (ou exportar a `OLLAMA_API_KEY` no ambiente do processo `ollama serve`).
+3. O modelo de embedding, que roda localmente: `ollama pull nomic-embed-text`.
+
 ```bash
 cp .env.example .env   # edite com sua OLLAMA_API_KEY — este arquivo NÃO vai no .zip
-pip install -r requirements.txt
+pip install -r requirements.txt   # versões exatas testadas; o primeiro install é pesado (torch)
 
-ollama serve            # deixe rodando em um terminal separado (ou já em background)
-
-python -m scripts.indexar   # gera as 2 coleções no ChromaDB local (demora alguns minutos)
 python -m app.main          # interface Gradio: http://localhost:7860
 ```
 
-Para rodar a avaliação RAGAS:
+O índice vetorial já vem pronto na pasta `chroma_db/` (as 2 coleções, geradas
+a partir dos 6 documentos de `docs/`), então **não é preciso reindexar** para
+usar o chat. A primeira pergunta demora um pouco mais porque carrega o
+cross-encoder de reranking (baixa o modelo do Hugging Face na primeira vez).
+
+Só reindexe se adicionar documentos (ver abaixo) — demora alguns minutos
+porque gera os embeddings de novo:
+```bash
+python -m scripts.indexar
+```
+
+Para rodar a avaliação RAGAS (usa a API do Ollama Cloud, leva alguns minutos):
 ```bash
 python -m app.ragas_eval
 ```
@@ -172,7 +189,7 @@ docmind_rag/
 ├── scripts/
 │   └── indexar.py           # reindexação da base (load → split → embed → store)
 ├── docs/                     # os 6 documentos reais + FONTES.md
-├── chroma_db/                 # índice ChromaDB (gerado localmente, fora do zip)
+├── chroma_db/                 # índice ChromaDB pronto (gerado por scripts/indexar.py)
 ├── tests/                      # testes automatizados offline
 ├── .env.example
 ├── requirements.txt
