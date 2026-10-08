@@ -4,8 +4,8 @@
 **Integrantes:** Fernando Hideki Rosa Oda (RM571408) · Léo Moreno Sambo (RM569556) · Thor Ferreira Camargo (RM569543) · Gabriel Botelho Romão (RM570589) · Rafael Marinucci Peres (RM569729) · David dos Reis Cardoso (RM568938)
 **Peso: 30% · Apresentação: Aula 07 · Entrega: 23:59 do dia da Aula 08 (.zip via Teams — só o líder)**
 
-Continuação do [CKP01](../README.md) — mesmo domínio e grupo. O pipeline RAG
-construído aqui vira a base de uma `@tool` no CKP03.
+Continuação do CKP01 — mesmo domínio e mesmo grupo. O pipeline RAG construído
+aqui vira a base de uma `@tool` no CKP03.
 
 ## Domínio
 
@@ -13,6 +13,57 @@ Mesmo domínio do CKP01: **educação financeira pessoal** ("FinComigo"). Este
 checkpoint constrói um pipeline RAG sobre uma base real de documentos
 oficiais brasileiros sobre o tema — orçamento, dívidas, investimentos
 (Tesouro Direto) e planejamento financeiro.
+
+## Os dois checkpoints deste projeto
+
+O domínio é fixo ao longo do semestre, e cada checkpoint é uma entrega
+separada, no mesmo repositório do GitHub
+(`rafaperes21/cp04-ProfessionalChatbot`): o CKP01 fica na raiz (`app/`) e o
+CKP02 em `docmind_rag/` (este projeto).
+
+**CKP01 — Chatbot Profissional (já entregue).** Chatbot "Fê", da plataforma
+fictícia FinComigo, com duas chains do LangChain: uma `ConversationChain` com
+memória `ConversationTokenBufferMemory` (janela de ~1200 tokens) para a
+conversa, e uma chain LCEL (`prompt | llm | PydanticOutputParser`) que
+classifica cada mensagem num schema Pydantic de 6 campos. Medido com o
+`gemma4:cloud` real: o experimento de *context rot* foi de 0 a 500 turnos de
+ruído (até ~25,6 mil tokens) sem queda de acerto, só aumento de latência
+(~0,6s para ~1,0s); a persona resistiu a 5 de 5 tentativas de jailbreak; e o
+meta prompting reforçou o system prompt. 14 testes automatizados.
+
+**CKP02 — DocMind RAG (este projeto).** Pipeline RAG completo
+(`load → split → embed → store → retrieve → generate`) sobre 6 documentos
+oficiais reais, com 2 configurações de chunking comparadas pelo RAGAS
+(faithfulness 1,000 nas duas; `pequeno_512` venceu em relevância, 0,879 vs
+0,838) e 3 diferenciais: metadata filtering, reranking e interface Gradio.
+A função `buscar()` foi escrita para ser reaproveitada como tool no CKP03.
+
+## Divisão de trabalho e histórico de commits
+
+Frentes de atuação **declaradas pelo grupo** (apenas a coluna de commits é
+verificável pelo histórico do Git):
+
+| Integrante | Commits no GitHub | Frente de atuação |
+|---|---|---|
+| Rafael Marinucci Peres (RM569729) | sim (conta `rafaperes21`) | Estrutura inicial do projeto e implementação do CKP01 |
+| Gabriel Botelho Romão (RM570589) | sim (conta `GabrielRoma0`) | Diferenciais do CKP01, implementação do CKP02, revisão do README |
+| David dos Reis Cardoso (RM568938) | nenhum | Definição do domínio e revisão do system prompt |
+| Fernando Hideki Rosa Oda (RM571408) | nenhum | Testes manuais do chatbot |
+| Léo Moreno Sambo (RM569556) | nenhum | Testes de resistência do system prompt |
+| Thor Ferreira Camargo (RM569543) | nenhum | Organização e checklist das entregas |
+
+**Por que nem todos têm commits.** Os commits do GitHub vêm de apenas duas
+contas (`rafaperes21` e `GabrielRoma0`). Nem todos os integrantes tinham
+familiaridade com Git/GitHub, então o repositório foi operado por Rafael e
+Gabriel, e os demais atuaram nas frentes da tabela, que não geram commits. Por
+isso o histórico do Git **não mede** a participação de cada um no trabalho do
+grupo.
+
+**Como o código foi produzido.** Todos os commits do repositório trazem o
+trailer `Co-Authored-By: Claude`: os dois checkpoints foram desenvolvidos com o
+Claude Code (Anthropic) como assistente de programação, operado por Rafael e
+Gabriel. Os resultados citados neste README (RAGAS, context rot, testes de
+jailbreak) foram medidos de fato, executando o código contra o `gemma4:cloud`.
 
 ## Base de conhecimento
 

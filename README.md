@@ -22,7 +22,22 @@ de financiamento, categorizador de gastos) no CKP03.
 Usuários-alvo: pessoas que querem organizar as próprias finanças e entender
 conceitos financeiros básicos, sem acesso a um consultor particular.
 
+## Estrutura do repositório
+
+O domínio é fixo ao longo do semestre e cada checkpoint é uma entrega
+separada neste mesmo repositório:
+
+| Pasta | Checkpoint | O que é |
+|---|---|---|
+| `app/` (raiz) | **CKP01 — Chatbot Profissional** | Este README: chatbot "Fê" com 2 chains LangChain, memória gerenciada, Pydantic e context rot |
+| `docmind_rag/` | **CKP02 — DocMind RAG** | Pipeline RAG sobre 6 documentos oficiais, com RAGAS e comparação de chunking — ver [docmind_rag/README.md](docmind_rag/README.md) |
+
+O pipeline RAG do CKP02 foi escrito para virar uma tool do agente no CKP03.
+
 ## Divisão de responsabilidades
+
+Frentes de atuação **declaradas pelo grupo** (apenas o histórico de commits é
+verificável pelo Git):
 
 | Integrante | Frente |
 |---|---|
@@ -33,10 +48,18 @@ conceitos financeiros básicos, sem acesso a um consultor particular.
 | Léo Moreno Sambo (RM569556) | Testes de resistência do system prompt (tentativas de sair do personagem / prompt injection) e ajuste das restrições em `prompts.py` |
 | Thor Ferreira Camargo (RM569543) | Organização da apresentação da Aula 04 e checklist de entrega (montagem do `.zip`, conferência de que o `.env` fica de fora) |
 
-A implementação técnica foi puxada pelo Rafael; o restante do grupo contribuiu
-com definição de domínio, testes manuais, revisão do system prompt e
-documentação — parte do grupo ainda está aprendendo a usar Git/GitHub na
-prática, então as mudanças de código concentram-se em menos commits.
+**Por que nem todos têm commits.** Os commits do GitHub vêm de apenas duas
+contas: `rafaperes21` (Rafael) e `GabrielRoma0` (Gabriel). Nem todos os
+integrantes tinham familiaridade com Git/GitHub, então o repositório foi
+operado por esses dois, e os demais atuaram nas frentes da tabela, que não
+geram commits. Por isso o histórico do Git **não mede** a participação de cada
+um no trabalho do grupo.
+
+**Como o código foi produzido.** Todos os commits do repositório trazem o
+trailer `Co-Authored-By: Claude`: os dois checkpoints foram desenvolvidos com
+o Claude Code (Anthropic) como assistente de programação, operado por Rafael e
+Gabriel. Os resultados citados nos READMEs (RAGAS, context rot, testes de
+jailbreak) foram medidos de fato, executando o código contra o `gemma4:cloud`.
 
 ## Requisitos atendidos
 
